@@ -9,4 +9,6 @@ export default {
     PORT: process.env.PORT,
     APP_URL: process.env.APP_URL,
     DATABASE_URL: process.env.DATABASE_URL as string,
+    JWT_ACCESS: process.env.JWT_ACCESS as string,
+    JWT_REFRESH: process.env.JWT_REFRESH as string
 }

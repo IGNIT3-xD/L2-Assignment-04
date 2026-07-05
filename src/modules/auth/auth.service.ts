@@ -1,7 +1,9 @@
 import { Role } from "../../../generated/prisma/enums";
+import config from "../../config";
 import { prisma } from "../../lib/prisma";
 import { IUser } from "./auth.interface";
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 export const regUserQuery = async (payload: IUser) => {
     const { name, email, password, role } = payload
@@ -33,4 +35,29 @@ export const regUserQuery = async (payload: IUser) => {
     })
 
     return user
+}
+
+export const loginUserQuery = async (data: IUser) => {
+    const { email, password } = data
+
+    const user = await prisma.user.findUniqueOrThrow({
+        where: { email }
+    })
+
+    const isPasswordMatched = await bcrypt.compare(password, user.password)
+    if (!isPasswordMatched)
+        throw new Error("Incorrect password")
+
+    const jwtPaylaod = {
+        id: user.id,
+        name: user.name,
+        email,
+        role: user.role
+    }
+
+    const accessToken = jwt.sign(jwtPaylaod, config.JWT_ACCESS, { expiresIn: '1d' })
+
+    return {
+        accessToken
+    }
 }
