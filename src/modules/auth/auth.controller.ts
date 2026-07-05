@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { loginUserQuery, regUserQuery } from "./auth.service";
+import { loginUserQuery, myProfileQuery, regUserQuery } from "./auth.service";
 import { catchAsync } from "../../utils/catchAsync";
 
 export const regUser = catchAsync(async (req: Request, res: Response) => {
@@ -19,5 +19,15 @@ export const loginUser = catchAsync(async (req: Request, res: Response) => {
         success: true,
         message: "User login successfully.",
         data: result
+    })
+})
+
+export const myProfile = catchAsync(async (req: Request, res: Response) => {
+    const user = await myProfileQuery(req.user?.id)
+
+    res.status(200).json({
+        success: true,
+        message: "User retrived successfully.",
+        data: user
     })
 })

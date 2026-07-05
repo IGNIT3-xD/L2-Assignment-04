@@ -56,8 +56,19 @@ export const loginUserQuery = async (data: IUser) => {
     }
 
     const accessToken = jwt.sign(jwtPaylaod, config.JWT_ACCESS, { expiresIn: '1d' })
+    const refreshToken = jwt.sign(jwtPaylaod, config.JWT_REFRESH, { expiresIn: '7d' })
 
     return {
-        accessToken
+        accessToken,
+        refreshToken
     }
+}
+
+export const myProfileQuery = async (user_id: string) => {
+    const user = await prisma.user.findUniqueOrThrow({
+        where: { id: user_id },
+        omit: { password: true }
+    })
+
+    return user
 }
