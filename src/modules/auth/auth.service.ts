@@ -1,11 +1,11 @@
+import { User } from "../../../generated/prisma/client";
 import { Role } from "../../../generated/prisma/enums";
 import config from "../../config";
 import { prisma } from "../../lib/prisma";
-import { IUser } from "./auth.interface";
 import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
 
-export const regUserQuery = async (payload: IUser) => {
+export const regUserQuery = async (payload: Pick<User, 'name' | 'email' | 'password' | 'role'>) => {
     const { name, email, password, role } = payload
     if (!name || !email || !password)
         throw new Error("Name, Email and Password must be provided.")
@@ -31,13 +31,14 @@ export const regUserQuery = async (payload: IUser) => {
             email,
             password: hashedPassword,
             role
-        }
+        },
+        omit: { password: true }
     })
 
     return user
 }
 
-export const loginUserQuery = async (data: IUser) => {
+export const loginUserQuery = async (data: Pick<User, 'email' | 'password'>) => {
     const { email, password } = data
 
     const user = await prisma.user.findUniqueOrThrow({
@@ -71,4 +72,25 @@ export const myProfileQuery = async (user_id: string) => {
     })
 
     return user
+}
+
+export const tokenGenerateQuery = async (refreshToken: string) => {
+    const varfiedRefreshToken = jwt.verify(refreshToken, config.JWT_REFRESH)
+    // console.log(varfiedRefreshToken);
+    const { id } = varfiedRefreshToken as JwtPayload
+
+    const user = await prisma.user.findUniqueOrThrow({
+        where: { id }
+    })
+
+    const jwtPayload = {
+        id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+    }
+
+    const accessToken = jwt.sign(jwtPayload, config.JWT_ACCESS, { expiresIn: '1d' })
+
+    return { accessToken }
 }

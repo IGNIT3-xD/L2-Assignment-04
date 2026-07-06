@@ -32,6 +32,9 @@ export const auth = (...requiredRoles: Role[]) => {
         if (!user)
             throw new Error("User not found")
 
+        if (user.status === 'BLOCKED')
+            throw new Error('You account is blocked.')
+
         req.user = varifiedToken
 
         next()
