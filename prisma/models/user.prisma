@@ -3,10 +3,12 @@ model User {
   name       String
   email      String     @unique
   password   String
-  status     UserStatus @default(ACTIVE) 
+  status     UserStatus @default(ACTIVE)
   role       Role       @default(CUSTOMER)
   created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt() 
+  updated_at DateTime   @updatedAt()
+
+  technicians Technician?
 
   @@map("user")
 }

@@ -1,10 +1,32 @@
 {
   "compilerOptions": {
+    // File Layout
+    "outDir": "./dist",
+    // Environment Settings
     "module": "ESNext",
     "moduleResolution": "bundler",
     "target": "ES2023",
+    "types": [
+      "node"
+    ],
+    // Other Outputs
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    // Stricter Typechecking Options
+    "noUncheckedIndexedAccess": true,
+    // Recommended Options
     "strict": true,
     "esModuleInterop": true,
-    "ignoreDeprecations": "6.0"
-  }
+    "ignoreDeprecations": "6.0",
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "noUncheckedSideEffectImports": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true,
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
