@@ -1,9 +1,9 @@
 model Payment {
-    id        String        @id @default(uuid())
-    status    PaymentStatus @default(PENDING)
-    amount    Float
-    paidAt    DateTime
-    updatedAt DateTime      @updatedAt
+  id        String        @id @default(uuid())
+  status    PaymentStatus @default(PENDING)
+  amount    Float
+  paidAt    DateTime
+  updatedAt DateTime      @updatedAt
 
-    @@map("payment")
+  @@map("payment")
 }

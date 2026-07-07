@@ -3,7 +3,7 @@ import { Role } from "../../../generated/prisma/enums";
 import config from "../../config";
 import { prisma } from "../../lib/prisma";
 import bcrypt from 'bcrypt'
-import jwt, { JwtPayload } from 'jsonwebtoken'
+import jwt, { type JwtPayload } from 'jsonwebtoken'
 
 export const regUserQuery = async (payload: Pick<User, 'name' | 'email' | 'password' | 'role'>) => {
     const { name, email, password, role } = payload
@@ -68,7 +68,10 @@ export const loginUserQuery = async (data: Pick<User, 'email' | 'password'>) => 
 export const myProfileQuery = async (user_id: string) => {
     const user = await prisma.user.findUniqueOrThrow({
         where: { id: user_id },
-        omit: { password: true }
+        omit: { password: true },
+        include: {
+            technicians: true
+        }
     })
 
     return user

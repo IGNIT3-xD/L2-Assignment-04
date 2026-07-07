@@ -1,9 +1,9 @@
 model Booking {
-    id          String        @id @default(uuid())
-    status      BookingStatus @default(REQUESTED)
-    scheduledAt DateTime
-    bookedAt    DateTime      @default(now())
-    updatedAt   DateTime      @updatedAt
+  id          String        @id @default(uuid())
+  status      BookingStatus @default(REQUESTED)
+  scheduledAt DateTime
+  bookedAt    DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
-    @@map("booking")
+  @@map("booking")
 }

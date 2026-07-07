@@ -11,9 +11,6 @@ model Service {
   technicianId String
   technician   Technician @relation(fields: [technicianId], references: [id])
 
-  categoryId String
-  category   Categories @relation(fields: [categoryId], references: [id])
-
   @@index([technicianId, price])
   @@map("service")
 }

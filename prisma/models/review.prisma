@@ -1,8 +1,8 @@
 model Reviews {
-    id        String   @id @default(uuid())
-    rating    Int
-    comment   String?
-    createdAt DateTime @default(now())
+  id        String   @id @default(uuid())
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
 
-    @@map("reviews")
+  @@map("reviews")
 }

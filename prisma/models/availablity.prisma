@@ -1,9 +1,9 @@
 model Availability {
-    id        String  @id @default(uuid())
-    dayOfWeek String
-    startTime String
-    endTime   String
-    isActive  Boolean @default(true)
+  id        String  @id @default(uuid())
+  dayOfWeek String
+  startTime String
+  endTime   String
+  isActive  Boolean @default(true)
 
-    @@map("availability")
+  @@map("availability")
 }

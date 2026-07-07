@@ -2,8 +2,8 @@ model Technician {
   id           String   @id @default(uuid())
   experience   Int?
   location     String?
-  isVerified   Boolean  @default(false)
-  avgRating    Float  @default(0.0)
+  isVerified   Boolean  @default(true)
+  avgRating    Float    @default(0.0)
   totalReviews Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
