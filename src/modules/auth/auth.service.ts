@@ -70,7 +70,11 @@ export const myProfileQuery = async (user_id: string) => {
         where: { id: user_id },
         omit: { password: true },
         include: {
-            technicians: true
+            technicians: {
+                omit: {
+                    userId: true
+                }
+            }
         }
     })
 

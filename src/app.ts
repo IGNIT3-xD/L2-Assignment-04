@@ -23,7 +23,7 @@ app.get('/', (req: Request, res: Response) => {
 app.use("/api/auth", authRouter)
 app.use("/api/services", servicesRouter)
 app.use("/api/technicians", technicianRouter)
-app.use("/api/admin/categories", categoryRouter)
+app.use("/api", categoryRouter)
 
 app.use(globalErrorHandler)
 
