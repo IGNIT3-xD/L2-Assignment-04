@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
-import { createTechnicianProfileQuery } from './technician.service';
+import { createTechnicianProfileQuery, getAllTechniciansQuery } from './technician.service';
 
 export const createTechnicianProfile = catchAsync(async (req: Request, res: Response) => {
     const userId = req.user?.id
@@ -13,4 +13,15 @@ export const createTechnicianProfile = catchAsync(async (req: Request, res: Resp
         message: "Technician profile created successfully.",
         data: technician
     })
+})
+
+export const getAllTechnicians = catchAsync(async (req: Request, res: Response) => {
+    const technicians = await getAllTechniciansQuery(req.query)
+
+    res.status(200).json({
+        success: true,
+        message: "All technicians retrieved successfully.",
+        data: technicians
+    })
+
 })

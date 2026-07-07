@@ -33,3 +33,41 @@ export const createTechnicianProfileQuery = async (payload: Pick<Technician, "ex
 
     return technician
 }
+
+export const getAllTechniciansQuery = async (query: any) => {
+    const sortOrder = query.sortOrder === 'asc' ? 'asc' : 'desc';
+    const sortBy = query.sortBy || 'createdAt';
+
+    const technicians = await prisma.technician.findMany({
+        where: {
+            AND: [
+                query.location ? { location: { contains: query.location, mode: 'insensitive' } } : {},
+                query.available ? {
+                    availabilities: {
+                        some: { dayOfWeek: query.available.toUpperCase() }
+                    }
+                } : {}
+            ]
+        },
+        include: {
+            user: {
+                omit: {
+                    password: true
+                }
+            },
+            availabilities: {
+                select: {
+                    dayOfWeek: true,
+                    startTime: true,
+                    endTime: true
+                }
+            }
+        },
+        omit: { userId: true },
+        orderBy: {
+            [sortBy]: sortOrder
+        }
+    })
+
+    return technicians
+}

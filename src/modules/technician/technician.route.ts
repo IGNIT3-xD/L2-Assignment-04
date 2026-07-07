@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { createTechnicianProfile } from "./technician.controller";
+import { createTechnicianProfile, getAllTechnicians } from "./technician.controller";
 import { auth } from "../../middlewares/auth";
 import { Role } from "../../../generated/prisma/enums";
 
 const technicianRouter = Router()
 
 technicianRouter.post('/', auth(Role.TECHNICIAN, Role.ADMIN), createTechnicianProfile)
+technicianRouter.get('/', getAllTechnicians)
 
 export default technicianRouter
