@@ -24,3 +24,22 @@ enum PaymentStatus {
   COMPLETED
   FAILED
 }
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum ServiceCategory {
+  PLUMBING
+  ELECTRICAL
+  CLEANING
+  CARPENTRY
+  PAINTING
+  APPLIANCE_REPAIR
+}

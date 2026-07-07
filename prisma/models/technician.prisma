@@ -11,7 +11,8 @@ model Technician {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])
 
-  services Service[]
+  services       Service[]
+  availabilities Availability[]
 
   @@index([location, avgRating])
   @@map("technician")

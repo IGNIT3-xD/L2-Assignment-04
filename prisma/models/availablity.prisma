@@ -1,9 +1,12 @@
 model Availability {
-  id        String  @id @default(uuid())
-  dayOfWeek String
+  id        String    @id @default(uuid())
+  dayOfWeek DayOfWeek
   startTime String
   endTime   String
-  isActive  Boolean @default(true)
+  isActive  Boolean   @default(true)
+
+  technicianId String
+  technician   Technician @relation(fields: [technicianId], references: [id])
 
   @@map("availability")
 }
