@@ -20,9 +20,15 @@ export const createTechnicianProfileQuery = async (payload: Pick<Technician, "ex
                     startTime: slot.startTime,
                     endTime: slot.endTime
                 }))
-            }
+            },
         },
-        include: { availabilities: true }
+        include: {
+            availabilities: {
+                omit: {
+                    technicianId: true
+                }
+            }
+        }
     })
 
     return technician

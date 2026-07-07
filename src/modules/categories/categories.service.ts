@@ -22,7 +22,9 @@ export const createCategoriesQuery = async (payload: Pick<Category, 'name'>) => 
 export const getCategoriesQuery = async () => {
     const categories = await prisma.category.findMany({
         include: {
-            services: true
+            services: {
+                omit: { categoryId: true }
+            }
         }
     })
     return categories

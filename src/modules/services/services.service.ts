@@ -1,3 +1,4 @@
+import { time } from "node:console";
 import type { Service } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 
@@ -38,9 +39,61 @@ export const createServiceQuery = async (payload: Pick<Service, 'title' | 'descr
             }
         },
         omit: {
-            categoryId: true
+            categoryId: true,
+            technicianId: true
         }
     })
 
     return service
+}
+
+export const getAllServicesQuery = async (query: any) => {
+    // Sorting
+    // const sortBy = query.sortBy ? query.sortBy : "createdAt"
+    const sortOrder = query.sortOrder === "asc" ? "asc" : "desc"
+    const technicianSortField = ['experience', 'avgRating', 'location']
+
+    let orderBy: any;
+
+    if (technicianSortField.includes(query.sortBy)) {
+        orderBy = {
+            technician: {
+                [query.sortBy]: sortOrder
+            }
+        }
+    }
+    else {
+        const sortBy = query.sortBy || "createdAt"
+        orderBy = {
+            [sortBy]: sortOrder
+        }
+    }
+
+    const services = await prisma.service.findMany({
+        where: {
+            AND: [
+                query.searchBy ? {
+                    OR: [
+                        { title: { contains: query.searchBy, mode: 'insensitive' } },
+                        { technician: { location: { contains: query.searchBy, mode: 'insensitive' } } },
+                        { category: { name: { contains: query.searchBy, mode: 'insensitive' } } }
+                    ]
+                } : {},
+                query.title ? { title: { contains: query.title, mode: 'insensitive' } } : {},
+                query.location ? { technician: { location: { contains: query.location, mode: 'insensitive' } } } : {},
+                query.category ? { category: { name: { contains: query.category, mode: 'insensitive' } } } : {},
+            ]
+        },
+        include: {
+            category: {
+                omit: { id: true }
+            },
+            technician: {
+                omit: { userId: true }
+            }
+        },
+        orderBy
+    })
+
+    return services
 }

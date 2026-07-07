@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
-import { createServiceQuery } from "./services.service";
+import { createServiceQuery, getAllServicesQuery } from "./services.service";
 
 export const createService = catchAsync(async (req: Request, res: Response) => {
     const userId = req.user?.id
@@ -18,5 +18,15 @@ export const createService = catchAsync(async (req: Request, res: Response) => {
         success: true,
         message: "Service created successfully.",
         data: service
+    })
+})
+
+export const getAllServices = catchAsync(async (req: Request, res: Response) => {
+    const services = await getAllServicesQuery(req.query)
+
+    res.status(200).json({
+        sucess: true,
+        message: "All services retrieved successfully.",
+        data: services
     })
 })
