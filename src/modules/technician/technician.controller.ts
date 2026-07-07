@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
-import { createTechnicianProfileQuery, getAllTechniciansQuery } from './technician.service';
+import { createTechnicianProfileQuery, getAllTechniciansQuery, getTechnicianByIdQuery } from './technician.service';
+import { execPath } from "node:process";
 
 export const createTechnicianProfile = catchAsync(async (req: Request, res: Response) => {
     const userId = req.user?.id
@@ -24,4 +25,16 @@ export const getAllTechnicians = catchAsync(async (req: Request, res: Response) 
         data: technicians
     })
 
+})
+
+export const getTechnicianById = catchAsync(async (req: Request, res: Response) => {
+    const technicianId = req.params.id
+
+    const technician = await getTechnicianByIdQuery(technicianId as string)
+
+    res.status(200).json({
+        success: true,
+        message: "Technicians retrieved successfully.",
+        data: technician
+    })
 })

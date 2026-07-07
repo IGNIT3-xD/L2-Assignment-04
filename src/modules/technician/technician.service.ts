@@ -71,3 +71,14 @@ export const getAllTechniciansQuery = async (query: any) => {
 
     return technicians
 }
+
+export const getTechnicianByIdQuery = async (technicianId: string) => {
+    const technician = await prisma.technician.findUnique({
+        where: { id: technicianId }
+    })
+
+    if (!technician)
+        throw new Error('Technician profile not found.')
+
+    return technician
+}
