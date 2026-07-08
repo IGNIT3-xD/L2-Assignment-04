@@ -7,6 +7,7 @@ import { globalErrorHandler } from './middlewares/globalErrorHandler';
 import servicesRouter from './modules/services/services.router';
 import technicianRouter from './modules/technician/technician.route';
 import categoryRouter from './modules/categories/categories.router';
+import bookingRouter from './modules/booking/booking.router';
 const app: Application = express()
 
 app.use(express.json())
@@ -24,6 +25,7 @@ app.use("/api/auth", authRouter)
 app.use("/api/services", servicesRouter)
 app.use("/api/technicians", technicianRouter)
 app.use("/api", categoryRouter)
+app.use("/api/bookings", bookingRouter)
 
 app.use(globalErrorHandler)
 

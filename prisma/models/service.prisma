@@ -14,6 +14,8 @@ model Service {
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
 
+  bookings Booking[]
+
   @@index([technicianId, price])
   @@map("service")
 }

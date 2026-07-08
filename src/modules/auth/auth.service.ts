@@ -74,7 +74,8 @@ export const myProfileQuery = async (user_id: string) => {
                 omit: {
                     userId: true
                 }
-            }
+            },
+            bookings: true
         }
     })
 
