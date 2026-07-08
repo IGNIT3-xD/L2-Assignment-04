@@ -13,7 +13,7 @@ model Technician {
 
   services       Service[]
   availabilities Availability[]
-  bookings       Booking[]
+  userBookings   Booking[]
 
   @@index([location, avgRating])
   @@map("technician")

@@ -9,7 +9,7 @@ model User {
   updated_at DateTime   @updatedAt()
 
   technicians Technician?
-  bookings    Booking[]
+  myBookings  Booking[]
 
   @@map("user")
 }
