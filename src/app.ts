@@ -8,7 +8,11 @@ import servicesRouter from './modules/services/services.router';
 import technicianRouter from './modules/technician/technician.route';
 import categoryRouter from './modules/categories/categories.router';
 import bookingRouter from './modules/booking/booking.router';
+import paymentRouter from './modules/payment/payment.router';
+import { stripeWebhookHandler } from './modules/payment/payment.controller';
 const app: Application = express()
+
+app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), stripeWebhookHandler)
 
 app.use(express.json())
 app.use(cookieParser())
@@ -26,6 +30,7 @@ app.use("/api/services", servicesRouter)
 app.use("/api/technicians", technicianRouter)
 app.use("/api", categoryRouter)
 app.use("/api/bookings", bookingRouter)
+app.use("/api/payments", paymentRouter)
 
 app.use(globalErrorHandler)
 

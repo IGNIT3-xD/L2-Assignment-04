@@ -21,8 +21,8 @@ enum BookingStatus {
 
 enum PaymentStatus {
   PENDING
-  COMPLETED
   FAILED
+  PAID
 }
 
 enum DayOfWeek {

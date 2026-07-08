@@ -102,7 +102,8 @@ export const getUsersBookingQuery = async (userId: string, role: Role) => {
                         description: true,
                         price: true
                     }
-                }
+                },
+                payment: true
             }
         })
 
