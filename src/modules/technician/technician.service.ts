@@ -1,4 +1,4 @@
-import { Availability, Technician } from "../../../generated/prisma/client";
+import { Availability, Booking, Technician } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 
 export const createTechnicianProfileQuery = async (payload: Pick<Technician, "experience" | "location"> & {
@@ -74,11 +74,119 @@ export const getAllTechniciansQuery = async (query: any) => {
 
 export const getTechnicianByIdQuery = async (technicianId: string) => {
     const technician = await prisma.technician.findUnique({
-        where: { id: technicianId }
+        where: { id: technicianId },
+        include: { availabilities: true }
     })
 
     if (!technician)
         throw new Error('Technician profile not found.')
 
     return technician
+}
+
+export const updateProfileQuery = async (userId: string, payload: Pick<Technician, 'experience' | 'location'>) => {
+    const { experience, location } = payload
+
+    const technician = await prisma.technician.findUnique({
+        where: { userId }
+    })
+
+    if (technician?.userId !== userId)
+        throw new Error("Technician not found.")
+
+    const updateProfile = await prisma.technician.update({
+        where: { userId },
+        data: {
+            experience,
+            location
+        }
+    })
+
+    return updateProfile
+}
+
+export const updateAvailablilityQuery = async (userId: string, availabilityId: string, paylaod: Pick<Availability, 'dayOfWeek' | 'startTime' | 'endTime' | 'isActive'>) => {
+    const technician = await prisma.technician.findUnique({
+        where: { userId }
+    })
+
+    if (technician?.userId !== userId)
+        throw new Error("Technician not found.")
+
+    const availablity = await prisma.availability.findUnique({
+        where: { id: availabilityId }
+    })
+
+    if (!availablity || availablity.technicianId !== technician.id)
+        throw new Error('Availability slot not found.')
+
+    if (paylaod.dayOfWeek && paylaod.dayOfWeek !== availablity.dayOfWeek) {
+        const conflict = await prisma.availability.findFirst({
+            where: {
+                technicianId: technician.id,
+                dayOfWeek: paylaod.dayOfWeek,
+                id: { not: availabilityId }
+            }
+        })
+
+        if (conflict)
+            throw new Error(`An availability slot for ${paylaod.dayOfWeek} already exists.`)
+    }
+
+    const updateAvailablity = await prisma.availability.update({
+        where: { id: availabilityId },
+        data: paylaod
+    })
+
+    return updateAvailablity
+}
+
+export const getTechnicanBookingsQuery = async (userId: string) => {
+    const technician = await prisma.technician.findUnique({
+        where: { userId }
+    })
+
+    if (!technician)
+        throw new Error("Technician profile not found.")
+
+    const booking = await prisma.booking.findMany({
+        where: {
+            technicianId: technician.id
+        },
+        include: {
+            customer: {
+                select: {
+                    name: true,
+                    email: true
+                }
+            }
+        }
+    })
+
+    return booking
+}
+
+export const updateBookingStatusQuery = async (userId: string, bookingId: string, payload: Pick<Booking, 'status'>) => {
+    const technician = await prisma.technician.findUnique({
+        where: { userId }
+    })
+
+    if (!technician)
+        throw new Error("Technician profile not found.")
+
+    const booking = await prisma.booking.findUnique({
+        where: { id: bookingId }
+    })
+
+    if (!booking || booking.technicianId !== technician.id)
+        throw new Error('Booking not found')
+
+    const updateBooking = await prisma.booking.update({
+        where: { id: bookingId },
+        data: {
+            status: payload.status
+        }
+    })
+
+    return updateBooking
 }

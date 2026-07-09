@@ -1,12 +1,16 @@
 import { Router } from "express";
-import { createTechnicianProfile, getAllTechnicians, getTechnicianById } from "./technician.controller";
+import { createTechnicianProfile, getAllTechnicians, getTechnicianBookings, getTechnicianById, updateAvailablility, updateBookingStatus, updateProfile } from "./technician.controller";
 import { auth } from "../../middlewares/auth";
 import { Role } from "../../../generated/prisma/enums";
 
 const technicianRouter = Router()
 
-technicianRouter.post('/', auth(Role.TECHNICIAN, Role.ADMIN), createTechnicianProfile)
-technicianRouter.get('/', getAllTechnicians)
-technicianRouter.get('/:id', getTechnicianById)
+technicianRouter.post('/technicians/', auth(Role.TECHNICIAN, Role.ADMIN), createTechnicianProfile)
+technicianRouter.get('/technicians/', getAllTechnicians)
+technicianRouter.get('/technicians/:id', getTechnicianById)
+technicianRouter.put('/technician/profile', auth(Role.ADMIN, Role.TECHNICIAN), updateProfile)
+technicianRouter.put('/technician/:id/availability', auth(Role.ADMIN, Role.TECHNICIAN), updateAvailablility)
+technicianRouter.get('/technician/bookings', auth(Role.ADMIN, Role.TECHNICIAN), getTechnicianBookings)
+technicianRouter.patch('/technician/bookings/:id', auth(Role.ADMIN, Role.TECHNICIAN), updateBookingStatus)
 
 export default technicianRouter

@@ -13,6 +13,9 @@ export const createPaymentQuery = async (bookingId: string, customerId: string) 
     if (!booking || booking.customerId !== customerId)
         throw new Error('Booking not found.')
 
+    if (booking.status === 'DECLINED')
+        throw new Error('Booking is declined by the technician.')
+
     if (booking.status !== 'ACCEPTED')
         throw new Error('Booking must be accepted by technician before payment.')
 
