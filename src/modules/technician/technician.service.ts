@@ -75,7 +75,23 @@ export const getAllTechniciansQuery = async (query: any) => {
 export const getTechnicianByIdQuery = async (technicianId: string) => {
     const technician = await prisma.technician.findUnique({
         where: { id: technicianId },
-        include: { availabilities: true }
+        include: {
+            availabilities: true,
+            userBookings: {
+                include: {
+                    reviews: {
+                        include: {
+                            customer: {
+                                select: {
+                                    name: true,
+                                    email: true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     })
 
     if (!technician)

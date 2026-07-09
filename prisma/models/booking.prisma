@@ -12,8 +12,9 @@ model Booking {
   technician   Technician @relation(fields: [technicianId], references: [id])
 
   serviceId String
-  service   Service  @relation(fields: [serviceId], references: [id])
+  service   Service   @relation(fields: [serviceId], references: [id])
   payment   Payment?
+  reviews   Reviews?
 
   @@map("booking")
 }

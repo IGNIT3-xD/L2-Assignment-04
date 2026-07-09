@@ -10,6 +10,7 @@ model User {
 
   technicians Technician?
   myBookings  Booking[]
+  reviews     Reviews[]
 
   @@map("user")
 }
