@@ -11,6 +11,7 @@ import bookingRouter from './modules/booking/booking.router';
 import paymentRouter from './modules/payment/payment.router';
 import { stripeWebhookHandler } from './modules/payment/payment.controller';
 import reviewsRouter from './modules/reviews/reviews.router';
+import usersRouter from './modules/user/user.router';
 const app: Application = express()
 
 app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), stripeWebhookHandler)
@@ -33,6 +34,7 @@ app.use("/api", categoryRouter)
 app.use("/api/bookings", bookingRouter)
 app.use("/api/payments", paymentRouter)
 app.use("/api/reviews", reviewsRouter)
+app.use("/api/admin", usersRouter)
 
 app.use(globalErrorHandler)
 
