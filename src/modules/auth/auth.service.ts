@@ -4,24 +4,25 @@ import config from "../../config";
 import { prisma } from "../../lib/prisma";
 import bcrypt from 'bcrypt'
 import jwt, { type JwtPayload } from 'jsonwebtoken'
+import { AppError } from "../../utils/AppError";
 
 export const regUserQuery = async (payload: Pick<User, 'name' | 'email' | 'password' | 'role'>) => {
     const { name, email, password, role } = payload
     if (!name || !email || !password)
-        throw new Error("Name, Email and Password must be provided.")
+        throw new AppError(400, "Name, Email and Password must be provided.")
 
     if (role === Role.ADMIN)
-        throw new Error("You are not eligible for Admin role.")
+        throw new AppError(400, "You are not eligible for Admin role.")
 
     if (password.length < 6)
-        throw new Error("Password must be at least 6 characters long.")
+        throw new AppError(400, "Password must be at least 6 characters long.")
 
     const isExist = await prisma.user.findUnique({
         where: { email }
     })
 
     if (isExist)
-        throw new Error("User is already exist.")
+        throw new AppError(400, "User is already exist.")
 
     const hashedPassword = await bcrypt.hash(password, 10)
 
@@ -47,7 +48,7 @@ export const loginUserQuery = async (data: Pick<User, 'email' | 'password'>) => 
 
     const isPasswordMatched = await bcrypt.compare(password, user.password)
     if (!isPasswordMatched)
-        throw new Error("Incorrect password")
+        throw new AppError(400, "Incorrect password")
 
     const jwtPaylaod = {
         id: user.id,

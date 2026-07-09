@@ -1,5 +1,6 @@
 import { Category } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
+import { AppError } from "../../utils/AppError";
 
 export const createCategoriesQuery = async (payload: Pick<Category, 'name'>) => {
     const { name } = payload
@@ -7,8 +8,9 @@ export const createCategoriesQuery = async (payload: Pick<Category, 'name'>) => 
     const isExist = await prisma.category.findUnique({
         where: { name }
     })
+    
     if (isExist)
-        throw new Error("Category is already exist.")
+        throw new AppError(400, "Category is already exist.")
 
     const category = await prisma.category.create({
         data: {

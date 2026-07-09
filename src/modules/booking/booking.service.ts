@@ -1,26 +1,27 @@
 import { Booking, Role } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
+import { AppError } from "../../utils/AppError";
 
 export const createBookingQuery = async (payload: Pick<Booking, 'technicianId' | 'serviceId' | 'scheduledAt'>, customerId: string) => {
     const { technicianId, serviceId, scheduledAt } = payload
 
     if (!technicianId || !serviceId || !scheduledAt)
-        throw new Error("Technician Id, Service Id and Schedule date must be provided.")
+        throw new AppError(400, "Technician Id, Service Id and Schedule date must be provided.")
 
     const service = await prisma.service.findUnique({
         where: { id: serviceId }
     })
 
     if (!service)
-        throw new Error('Service not found')
+        throw new AppError(404, 'Service not found')
 
     if (service.technicianId !== technicianId)
-        throw new Error('This service does not belong to the specified technician.')
+        throw new AppError(403, 'This service does not belong to the specified technician.')
 
     const ScheduleDate = new Date(scheduledAt)
 
     if (ScheduleDate < new Date())
-        throw new Error('Scheduled date must be in the future.')
+        throw new AppError(400, 'Scheduled date must be in the future.')
 
     const isExist = await prisma.booking.findFirst({
         where: {
@@ -32,7 +33,7 @@ export const createBookingQuery = async (payload: Pick<Booking, 'technicianId' |
     })
 
     if (isExist)
-        throw new Error("You've already requested this booking. Please wait untill ACCEPTED.")
+        throw new AppError(400, "You've already requested this booking. Please wait untill ACCEPTED.")
 
     const booking = await prisma.booking.create({
         data: {
@@ -71,7 +72,7 @@ export const getUsersBookingQuery = async (userId: string, role: Role) => {
         })
 
         if (!technician)
-            throw new Error("Technician profile not found.")
+            throw new AppError(404, "Technician profile not found.")
 
         const booking = await prisma.booking.findMany({
             where: {
@@ -136,16 +137,16 @@ export const getBookingByIdQuery = async (bookingId: string, userId: string, rol
     })
 
     if (!booking)
-        throw new Error("Booking details not found.")
+        throw new AppError(404, "Booking details not found.")
 
     if (role === 'CUSTOMER' && booking.customerId !== userId)
-        throw new Error('Unauthorized.')
+        throw new AppError(401, 'Unauthorized.')
 
     if (role === 'TECHNICIAN') {
         const technician = await prisma.technician.findUnique({ where: { userId } })
 
         if (!technician || booking.technicianId !== technician.id)
-            throw new Error('Booking details not found')
+            throw new AppError(404, 'Booking details not found')
     }
 
     return booking
@@ -158,13 +159,13 @@ export const cancelBookingQuery = async (bookingId: string, customerId: string) 
     })
 
     if (booking?.customerId !== customerId)
-        throw new Error('Unauthorized.')
+        throw new AppError(401, 'Unauthorized.')
 
     if (booking.status === 'IN_PROGRESS' || booking.status === 'COMPLETED')
-        throw new Error("You can't cancel your booking now.")
+        throw new AppError(400, "You can't cancel your booking now.")
 
     if (booking.status === 'CANCELLED' || booking.payment?.status === 'REFUND_PENDING')
-        throw new Error('Cancelation in progress. Please, wait')
+        throw new AppError(400, 'Cancelation in progress. Please, wait')
 
     const cancelledBooking = await prisma.booking.update({
         where: { id: bookingId },

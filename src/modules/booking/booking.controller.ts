@@ -1,13 +1,14 @@
 import { catchAsync } from "../../utils/catchAsync";
 import { Request, Response } from 'express';
 import { cancelBookingQuery, createBookingQuery, getBookingByIdQuery, getUsersBookingQuery } from "./booking.service";
+import { AppError } from "../../utils/AppError";
 
 export const createBooking = catchAsync(async (req: Request, res: Response) => {
     const customerId = req.user?.id
     const payload = req.body
 
     if (!customerId)
-        throw new Error('Unauthorized')
+        throw new AppError(401, 'Unauthorized')
 
     const booking = await createBookingQuery(payload, customerId)
 
@@ -51,7 +52,7 @@ export const cancelBooking = catchAsync(async (req: Request, res: Response) => {
     const bookingId = req.params.id as string
 
     const booking = await cancelBookingQuery(bookingId, customerId)
-    
+
     res.status(200).json({
         success: true,
         message: "Booking cancelled successfully.",

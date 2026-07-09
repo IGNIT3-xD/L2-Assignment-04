@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { loginUserQuery, myProfileQuery, regUserQuery, tokenGenerateQuery } from "./auth.service";
 import { catchAsync } from "../../utils/catchAsync";
+import { AppError } from "../../utils/AppError";
 
 export const regUser = catchAsync(async (req: Request, res: Response) => {
     const user = await regUserQuery(req.body)
@@ -49,7 +50,7 @@ export const myProfile = catchAsync(async (req: Request, res: Response) => {
 export const generateToken = catchAsync(async (req: Request, res: Response) => {
     const { refreshToken } = req.cookies
     if (!refreshToken)
-        throw new Error("Token is missing")
+        throw new AppError(400, "Token is missing")
 
     const { accessToken } = await tokenGenerateQuery(refreshToken)
 

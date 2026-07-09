@@ -1,12 +1,13 @@
 import { catchAsync } from "../../utils/catchAsync";
 import { Request, Response } from 'express';
 import { createCategoriesQuery, getCategoriesQuery } from "./categories.service";
+import { AppError } from "../../utils/AppError";
 
 export const createCategories = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body
 
     if (!payload.name)
-        throw new Error("Invalid category.")
+        throw new AppError(400, "Invalid category.")
 
     const category = await createCategoriesQuery(payload)
 

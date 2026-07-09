@@ -36,6 +36,13 @@ app.use("/api/payments", paymentRouter)
 app.use("/api/reviews", reviewsRouter)
 app.use("/api/admin", usersRouter)
 
+app.use((req: Request, res: Response) => {
+    res.status(404).json({
+        success: false,
+        message: "Route not found!",
+    })
+})
+
 app.use(globalErrorHandler)
 
 export default app

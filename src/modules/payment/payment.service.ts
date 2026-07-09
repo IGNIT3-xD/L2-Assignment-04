@@ -1,6 +1,7 @@
 import config from "../../config"
 import { prisma } from "../../lib/prisma"
 import { stripe } from "../../lib/stripe"
+import { AppError } from "../../utils/AppError";
 
 export const createPaymentQuery = async (bookingId: string, customerId: string) => {
     const BDT_USD = 0.0081;
@@ -11,20 +12,20 @@ export const createPaymentQuery = async (bookingId: string, customerId: string) 
     })
 
     if (!booking || booking.customerId !== customerId)
-        throw new Error('Booking not found.')
+        throw new AppError(404, 'Booking not found.')
 
     if (booking.status === 'DECLINED')
-        throw new Error('Booking is declined by the technician.')
+        throw new AppError(403, 'Booking is declined by the technician.')
 
     if (booking.status !== 'ACCEPTED')
-        throw new Error('Booking must be accepted by technician before payment.')
+        throw new AppError(400, 'Booking must be accepted by technician before payment.')
 
     const existingPayment = await prisma.payment.findUnique({
         where: { bookingId }
     })
 
     if (existingPayment?.status === 'PAID')
-        throw new Error('Payment already initiated for this booking.')
+        throw new AppError(400, 'Payment already initiated for this booking.')
 
     const priceInUsd = booking.service.price * BDT_USD
     const amountInCents = Math.round(priceInUsd * 100)
@@ -125,9 +126,7 @@ export const getPaymentByIdQuery = async (paymentId: string, customerId: string)
     const payment = await prisma.payment.findUnique({
         where: {
             id: paymentId,
-            booking: {
-                customerId
-            }
+            booking: { customerId }
         },
         include: {
             booking: {

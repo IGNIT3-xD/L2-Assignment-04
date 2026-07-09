@@ -1,5 +1,6 @@
 import { User } from "../../../generated/prisma/client"
 import { prisma } from "../../lib/prisma"
+import { AppError } from "../../utils/AppError"
 
 export const getAllUsersQuery = async (query: any) => {
     const sortOrder = query.sortOrder === "asc" ? "asc" : "desc"
@@ -25,7 +26,7 @@ export const updateUserStatusQuery = async (userId: string, payload: Pick<User, 
     const user = await prisma.user.findUnique({ where: { id: userId } })
 
     if (!user)
-        throw new Error('User not found.')
+        throw new AppError(404, 'User not found.')
 
     const upUser = await prisma.user.update({
         where: { id: userId },
