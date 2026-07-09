@@ -150,3 +150,36 @@ export const getBookingByIdQuery = async (bookingId: string, userId: string, rol
 
     return booking
 }
+
+export const cancelBookingQuery = async (bookingId: string, customerId: string) => {
+    const booking = await prisma.booking.findUnique({
+        where: { id: bookingId },
+        include: { payment: true }
+    })
+
+    if (booking?.customerId !== customerId)
+        throw new Error('Unauthorized.')
+
+    if (booking.status === 'IN_PROGRESS' || booking.status === 'COMPLETED')
+        throw new Error("You can't cancel your booking now.")
+
+    if (booking.status === 'CANCELLED' || booking.payment?.status === 'REFUND_PENDING')
+        throw new Error('Cancelation in progress. Please, wait')
+
+    const cancelledBooking = await prisma.booking.update({
+        where: { id: bookingId },
+        data: { status: 'CANCELLED' },
+        include: { payment: true }
+    })
+
+    if (booking.payment?.status === 'PAID') {
+        await prisma.payment.update({
+            where: { bookingId },
+            data: {
+                status: 'REFUND_PENDING'
+            }
+        })
+    }
+
+    return cancelledBooking
+}

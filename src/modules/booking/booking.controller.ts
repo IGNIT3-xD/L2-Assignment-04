@@ -1,6 +1,6 @@
 import { catchAsync } from "../../utils/catchAsync";
 import { Request, Response } from 'express';
-import { createBookingQuery, getBookingByIdQuery, getUsersBookingQuery } from "./booking.service";
+import { cancelBookingQuery, createBookingQuery, getBookingByIdQuery, getUsersBookingQuery } from "./booking.service";
 
 export const createBooking = catchAsync(async (req: Request, res: Response) => {
     const customerId = req.user?.id
@@ -44,4 +44,17 @@ export const getBookingById = catchAsync(async (req: Request, res: Response) => 
         message: 'Booking retrieved successfully',
         data: booking
     })
+})
+
+export const cancelBooking = catchAsync(async (req: Request, res: Response) => {
+    const customerId = req.user?.id
+    const bookingId = req.params.id as string
+
+    const booking = await cancelBookingQuery(bookingId, customerId)
+    
+    res.status(200).json({
+        success: true,
+        message: "Booking cancelled successfully.",
+        data: booking,
+    });
 })

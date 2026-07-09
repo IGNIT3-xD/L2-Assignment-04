@@ -23,6 +23,8 @@ enum PaymentStatus {
   PENDING
   FAILED
   PAID
+  REFUND_PENDING
+  REFUNDED
 }
 
 enum DayOfWeek {
