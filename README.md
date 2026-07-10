@@ -86,7 +86,6 @@ Create a `.env` file in the project root with these example variables:
 ```
 # Server
 PORT=5000
-NODE_ENV=development
 
 # Auth
 JWT_SECRET=replace_with_strong_secret
@@ -115,7 +114,7 @@ npm run dev
 Default base URL for local development:
 
 ```
-http://localhost:5000
+https://fix-it-now-silk.vercel.app
 ```
 
 API base path used in this documentation:
@@ -124,7 +123,18 @@ API base path used in this documentation:
 /api
 ```
 
-(Example: http://localhost:3000/api/auth/login)
+(Example: https://fix-it-now-silk.vercel.app/api/auth/login)
+
+## Postman / API Documentation
+
+A public Postman documentation for this API is available:
+
+https://documenter.getpostman.com/view/55121364/2sBY4LR2aC
+
+To import the collection into Postman:
+
+1. Open Postman -> Import -> Link
+2. Paste the URL above and import the collection and environment as needed.
 
 
 ## API Documentation
@@ -338,35 +348,6 @@ Authorization: Bearer <jwt>
   - Response: 201 Created — category object
 
 
-## Request & Response Examples (cURL)
-
-Login example:
-
-```
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"jane@example.com","password":"P@ssw0rd"}'
-```
-
-Create booking (authenticated):
-
-```
-curl -X POST http://localhost:3000/api/bookings \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{"technicianId":"tech-123","serviceId":"svc-456","scheduledAt":"2026-07-15T10:00:00Z","address":"123 Main St","notes":"Please bring spare parts"}'
-```
-
-Create Stripe session (authenticated):
-
-```
-curl -X POST http://localhost:3000/api/payments/create \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{"bookingId":"booking-123"}'
-```
-
-
 ## Error Responses
 
 All errors follow a standardized envelope. Example:
@@ -377,8 +358,8 @@ Content-Type: application/json
 
 {
   "error": {
-    "code": "VALIDATION_FAILED",
     "message": "One or more fields failed validation",
+    "code": "VALIDATION_FAILED",
     "details": [ { "field": "email", "message": "Email is required" } ]
   }
 }
@@ -424,14 +405,3 @@ Maintainer: Imran Ali — md.imranali2046@gmail.com
 
 
 ---
-
-## Postman / API Documentation
-
-A public Postman documentation for this API is available:
-
-https://documenter-api.postman.tech/view/55121364/2sBY4LR2aC
-
-To import the collection into Postman:
-
-1. Open Postman -> Import -> Link
-2. Paste the URL above and import the collection and environment as needed.

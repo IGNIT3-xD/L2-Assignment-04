@@ -1,17 +1,18 @@
 {
-  "name": "assignment-4",
+  "name": "FixItNow",
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
   "author": "Imran Ali",
   "type": "module",
-  "main": "server.ts",
+  "main": "dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.ts",
-    "stripe:webhook": "stripe listen --forward-to localhost:5000/api/payments/webhook"
+    "build": "tsup",
+    "start": "node dist/server.js",
+    "postinstall": "prisma generate",
+    "stripe:webhook": "stripe listen --forward-to fix-it-now-silk.vercel.app/api/payments/webhook"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -36,6 +37,8 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.22.0",
-    "stripe": "^22.3.0"
+    "stripe": "^22.3.0",
+    "tsup": "^8.5.1",
+    "vercel": "^55.0.0"
   }
 }
