@@ -77,19 +77,22 @@ export const getTechnicianByIdQuery = async (technicianId: string) => {
     const technician = await prisma.technician.findUnique({
         where: { id: technicianId },
         include: {
-            availabilities: true,
-            userBookings: {
+            availabilities: { omit: { technicianId: true } },
+            services: {
                 include: {
-                    reviews: {
-                        include: {
-                            customer: {
-                                select: {
-                                    name: true,
-                                    email: true
-                                }
-                            }
-                        }
+                    category: {
+                        select: { name: true }
+                    },
+                    bookings: {
+                        select: { reviews: true }
                     }
+                },
+                omit: {
+                    id: true,
+                    technicianId: true,
+                    updatedAt: true,
+                    createdAt: true,
+                    categoryId: true
                 }
             }
         }
@@ -147,7 +150,7 @@ export const updateAvailablilityQuery = async (userId: string, availabilityId: s
         })
 
         if (conflict)
-            throw new AppError(400, `An availability slot for ${paylaod.dayOfWeek} already exists.`)
+            throw new AppError(409, `An availability slot for ${paylaod.dayOfWeek} already exists.`)
     }
 
     const updateAvailablity = await prisma.availability.update({
