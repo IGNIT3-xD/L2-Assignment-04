@@ -6,8 +6,8 @@ import bcrypt from 'bcrypt'
 import jwt, { type JwtPayload } from 'jsonwebtoken'
 import { AppError } from "../../utils/AppError";
 
-export const regUserQuery = async (payload: Pick<User, 'name' | 'email' | 'password' | 'role'>) => {
-    const { name, email, password, role } = payload
+export const regUserQuery = async (payload: Pick<User, 'name' | 'email' | 'password' | 'role'> & { profilePicture?: string }) => {
+    const { name, email, password, role, profilePicture } = payload
     if (!name || !email || !password)
         throw new AppError(400, "Name, Email and Password must be provided.")
 
@@ -31,12 +31,23 @@ export const regUserQuery = async (payload: Pick<User, 'name' | 'email' | 'passw
             name,
             email,
             password: hashedPassword,
+            profilePicture,
             role
         },
         omit: { password: true }
     })
 
-    return user
+    const jwtPaylaod = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+    }
+
+    const accessToken = jwt.sign(jwtPaylaod, config.JWT_ACCESS, { expiresIn: '1d' })
+    const refreshToken = jwt.sign(jwtPaylaod, config.JWT_REFRESH, { expiresIn: '7d' })
+
+    return { user, accessToken, refreshToken }
 }
 
 export const loginUserQuery = async (data: Pick<User, 'email' | 'password'>) => {

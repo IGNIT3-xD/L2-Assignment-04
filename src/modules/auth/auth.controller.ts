@@ -4,12 +4,26 @@ import { catchAsync } from "../../utils/catchAsync";
 import { AppError } from "../../utils/AppError";
 
 export const regUser = catchAsync(async (req: Request, res: Response) => {
-    const user = await regUserQuery(req.body)
+    const result = await regUserQuery(req.body)
+
+    res.cookie("accessToken", result.accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: true,
+        maxAge: 1000 * 60 * 60 * 24
+    })
+
+    res.cookie('refreshToken', result.refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: true,
+        maxAge: 1000 * 60 * 60 * 24 * 7
+    })
 
     res.status(201).json({
         success: true,
         message: "User created sucessfully.",
-        data: user
+        data: result
     })
 })
 
@@ -18,15 +32,15 @@ export const loginUser = catchAsync(async (req: Request, res: Response) => {
 
     res.cookie("accessToken", result.accessToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "none",
+        secure: true,
+        sameSite: true,
         maxAge: 1000 * 60 * 60 * 24
     })
 
     res.cookie('refreshToken', result.refreshToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: 'none',
+        secure: true,
+        sameSite: true,
         maxAge: 1000 * 60 * 60 * 24 * 7
     })
 
@@ -56,7 +70,7 @@ export const generateToken = catchAsync(async (req: Request, res: Response) => {
 
     res.cookie('accessToken', accessToken, {
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: 'none',
         maxAge: 1000 * 60 * 60 * 24
     })

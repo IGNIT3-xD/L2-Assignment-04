@@ -3,11 +3,14 @@ import type { Service } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 
-export const createServiceQuery = async (payload: Pick<Service, 'title' | 'description' | 'price' | 'categoryId'>, userId: string) => {
-    const { title, description, price, categoryId } = payload
+export const createServiceQuery = async (payload: Pick<Service, 'title' | 'description' | 'thumbnail' | 'price' | 'categoryId'>, userId: string) => {
+    const { title, description, thumbnail, price, categoryId } = payload
 
     if (!categoryId)
         throw new AppError(400, "Please, provide a category id. You can get it from (/api/categories)")
+
+    if (!thumbnail)
+        throw new AppError(400, "Please, provide a thumbnail.")
 
     const technician = await prisma.technician.findUnique({
         where: { userId }
@@ -27,6 +30,7 @@ export const createServiceQuery = async (payload: Pick<Service, 'title' | 'descr
         data: {
             title,
             description,
+            thumbnail,
             price,
             technicianId: technician.id,
             categoryId
