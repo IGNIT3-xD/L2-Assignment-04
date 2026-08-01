@@ -102,3 +102,31 @@ export const getAllServicesQuery = async (query: any) => {
 
     return services
 }
+
+export const getServiceByIdQuery = async (id: string) => {
+    const service = await prisma.service.findUnique({
+        where: { id },
+        include: {
+            category: true,
+            technician: {
+                include: {
+                    availabilities: true
+                }
+            },
+            bookings: {
+                include: {
+                    reviews: true
+                }
+            }
+        },
+        omit: {
+            categoryId: true,
+            technicianId: true,
+        }
+    })
+
+    if (!service)
+        throw new AppError(404, 'Technician profile not found.')
+
+    return service
+}
