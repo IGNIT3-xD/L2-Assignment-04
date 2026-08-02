@@ -84,7 +84,7 @@ export const getUsersBookingQuery = async (userId: string, role: Role) => {
                         name: true,
                         email: true
                     }
-                }
+                },
             }
         })
 

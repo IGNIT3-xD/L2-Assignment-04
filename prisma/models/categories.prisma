@@ -1,7 +1,7 @@
 model Category {
-    id       String    @id @default(uuid())
-    name     String    @unique
-    services Service[]
+  id       String    @id @default(uuid())
+  name     String    @unique
+  services Service[]
 
-    @@map("category")
+  @@map("category")
 }

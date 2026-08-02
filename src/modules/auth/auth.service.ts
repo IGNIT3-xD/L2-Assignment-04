@@ -87,7 +87,8 @@ export const myProfileQuery = async (user_id: string) => {
                     userId: true
                 },
                 include: {
-                    userBookings: true
+                    userBookings: true,
+                    availabilities: true
                 }
             },
             myBookings: true

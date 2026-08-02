@@ -199,7 +199,12 @@ export const getTechnicanBookingsQuery = async (userId: string) => {
                     name: true,
                     email: true
                 }
-            }
+            },
+            service: {
+                include: {
+                    category: true,
+                },
+            },
         }
     })
 
