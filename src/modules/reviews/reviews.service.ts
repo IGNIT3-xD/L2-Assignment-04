@@ -97,3 +97,21 @@ export const deleteReviewQuery = async (userId: string, reviewId: string) => {
 
     return delReview
 }
+
+export const getCustomerReviewsQuery = async (userId: string) => {
+    if (!userId)
+        throw new AppError(403, 'Unauthorized')
+
+    const myReviews = await prisma.reviews.findMany({
+        where: { userId },
+        include: {
+            booking: {
+                select: {
+                    service: true
+                }
+            }
+        }
+    })
+
+    return myReviews
+}

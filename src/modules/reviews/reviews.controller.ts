@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
-import { createReviwsQuery, deleteReviewQuery, getAllReviewsQuery } from "./reviews.service";
+import { createReviwsQuery, deleteReviewQuery, getAllReviewsQuery, getCustomerReviewsQuery } from "./reviews.service";
 
 export const createReviews = catchAsync(async (req: Request, res: Response) => {
     const userId = req.user?.id
@@ -34,5 +34,17 @@ export const deleteReview = catchAsync(async (req: Request, res: Response) => {
         success: true,
         message: "Review deleted successfully.",
         data: review
+    })
+})
+
+export const getCustomerReviews = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user?.id
+
+    const reviews = await getCustomerReviewsQuery(userId as string)
+
+    res.status(200).json({
+        success: true,
+        message: "Reviews retrieved successfully.",
+        data: reviews
     })
 })
