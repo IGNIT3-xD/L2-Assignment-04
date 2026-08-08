@@ -118,3 +118,63 @@ export const tokenGenerateQuery = async (refreshToken: string) => {
 
     return { accessToken }
 }
+
+export const updateProfileQuery = async (user_id: string, payload: {
+    name?: string,
+    currentPassword?: string
+    newPassword?: string
+    profilePicture?: string
+}) => {
+    const { name, currentPassword, newPassword, profilePicture } = payload
+
+    const isExist = await prisma.user.findUnique({
+        where: { id: user_id }
+    })
+
+    if (!isExist) {
+        throw new AppError(404, 'User not found')
+    }
+
+    const updateData: {
+        name?: string
+        profilePicture?: string
+        password?: string
+    } = {}
+
+    if (name !== undefined) {
+        updateData.name = name
+    }
+
+    if (profilePicture !== undefined) {
+        updateData.profilePicture = profilePicture
+    }
+
+    if (newPassword) {
+        if (!currentPassword) {
+            throw new AppError(400, "Current password is required to change password")
+        }
+
+        const isPasswordMacthed = await bcrypt.compare(currentPassword, isExist.password)
+        if (!isPasswordMacthed) {
+            throw new AppError(400, "Incorrect current password")
+        }
+
+        updateData.password = await bcrypt.hash(newPassword, 10)
+    }
+
+    const updateUser = await prisma.user.update({
+        where: { id: user_id },
+        data: updateData,
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            profilePicture: true,
+            created_at: true,
+            updated_at: true
+        }
+    })
+
+    return updateUser
+}

@@ -1,10 +1,18 @@
 import { Request, Response } from "express";
-import { loginUserQuery, myProfileQuery, regUserQuery, tokenGenerateQuery } from "./auth.service";
+import { loginUserQuery, myProfileQuery, regUserQuery, tokenGenerateQuery, updateProfileQuery } from "./auth.service";
 import { catchAsync } from "../../utils/catchAsync";
 import { AppError } from "../../utils/AppError";
+import { uploadToCloudinary } from './../../utils/uploadToCloudinary';
 
 export const regUser = catchAsync(async (req: Request, res: Response) => {
-    const result = await regUserQuery(req.body)
+    let profilePicture: string | undefined
+
+    if (req.file) {
+        const result = await uploadToCloudinary(req.file)
+        profilePicture = result.secure_url
+    }
+
+    const result = await regUserQuery({ ...req.body, profilePicture })
 
     res.cookie("accessToken", result.accessToken, {
         httpOnly: true,
@@ -79,5 +87,24 @@ export const generateToken = catchAsync(async (req: Request, res: Response) => {
         success: true,
         message: "Token generated successfully.",
         data: { accessToken }
+    })
+})
+
+export const updateProfile = catchAsync(async (req: Request, res: Response) => {
+    const id = req.user?.id
+
+    let profilePicture: string | undefined;
+
+    if (req.file) {
+        const result = await uploadToCloudinary(req.file)
+        profilePicture = result.secure_url
+    }
+
+    const result = await updateProfileQuery(id, { ...req.body, profilePicture })
+
+    res.status(200).json({
+        success: true,
+        message: "Profile updated successfully.",
+        data: result
     })
 })

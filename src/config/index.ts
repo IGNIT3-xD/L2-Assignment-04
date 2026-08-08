@@ -13,4 +13,7 @@ export default {
     JWT_REFRESH: process.env.JWT_REFRESH as string,
     STRIPE_SECRET: process.env.STRIPE_SECRET as string,
     WEBHOOK_SECRET: process.env.WEBHOOK_SECRET as string,
+    CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
+    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
 }
