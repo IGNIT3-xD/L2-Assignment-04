@@ -48,7 +48,7 @@ export const deleteService = catchAsync(async (req: Request, res: Response) => {
 
     await deleteServiceQuery(serviceId as string)
 
-    res.status(204).json({
+    res.status(200).json({
         sucess: true,
         message: "service deleted successfully.",
         data: null
