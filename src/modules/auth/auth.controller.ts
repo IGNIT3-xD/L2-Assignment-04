@@ -127,16 +127,17 @@ export const googleAuthCallback = catchAsync(async (req: Request, res: Response)
     res.cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: true,
-        sameSite: 'lax',
+        sameSite: true,
         maxAge: 1000 * 60 * 60 * 24
     })
 
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: 'lax',
+        sameSite: true,
         maxAge: 1000 * 60 * 60 * 24 * 7
     })
+    const redirectUrl = config.APP_URL || 'https://fix-it-now-live.vercel.app'
 
-    res.redirect(`${config.APP_URL}`)
+    res.redirect(redirectUrl)
 })

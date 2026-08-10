@@ -7,8 +7,8 @@ dotenv.config({
 
 export default {
     PORT: process.env.PORT,
-    APP_URL: process.env.APP_URL,
-    BACKEND_URL: process.env.BACKEND_URL,
+    APP_URL: process.env.APP_URL as string,
+    BACKEND_URL: process.env.BACKEND_URL as string,
     DATABASE_URL: process.env.DATABASE_URL as string,
     JWT_ACCESS: process.env.JWT_ACCESS as string,
     JWT_REFRESH: process.env.JWT_REFRESH as string,
