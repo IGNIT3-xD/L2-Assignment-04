@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
-import { createServiceQuery, getAllServicesQuery, getServiceByIdQuery } from "./services.service";
+import { createServiceQuery, deleteServiceQuery, getAllServicesQuery, getServiceByIdQuery } from "./services.service";
 import { AppError } from "../../utils/AppError";
 
 export const createService = catchAsync(async (req: Request, res: Response) => {
@@ -40,5 +40,17 @@ export const getServiceById = catchAsync(async (req: Request, res: Response) => 
         sucess: true,
         message: "service retrieved successfully.",
         data: service
+    })
+})
+
+export const deleteService = catchAsync(async (req: Request, res: Response) => {
+    const serviceId = req.params.id
+
+    await deleteServiceQuery(serviceId as string)
+
+    res.status(204).json({
+        sucess: true,
+        message: "service deleted successfully.",
+        data: null
     })
 })

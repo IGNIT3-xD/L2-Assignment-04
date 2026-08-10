@@ -130,3 +130,19 @@ export const getServiceByIdQuery = async (id: string) => {
 
     return service
 }
+
+export const deleteServiceQuery = async (id: string) => {
+    const service = await prisma.service.findUnique({
+        where: { id }
+    })
+
+    if (!service) {
+        throw new AppError(404, "Service not found.")
+    }
+
+    const deleteService = await prisma.service.delete({
+        where: { id }
+    })
+
+    return deleteService
+} 
