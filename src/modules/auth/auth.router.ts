@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { generateToken, loginUser, myProfile, regUser, updateProfile } from "./auth.controller";
+import { generateToken, googleAuthCallback, loginUser, myProfile, regUser, updateProfile } from "./auth.controller";
 import { auth } from "../../middlewares/auth";
 import { Role } from "../../../generated/prisma/enums";
 import { upload } from './../../lib/multer';
+import passport from './../../lib/passport';
+import config from "../../config";
 
 const authRouter = Router()
 
@@ -16,5 +18,11 @@ authRouter.patch(
     updateProfile
 )
 authRouter.post('/refreshToken', generateToken)
+authRouter.get('/google', passport.authenticate('google', { session: false, scope: ['profile', 'email'] }))
+authRouter.get(
+    '/google/callback',
+    passport.authenticate('google', { session: false, failureRedirect: `${config.APP_URL}/auth/login` }),
+    googleAuthCallback
+)
 
 export default authRouter

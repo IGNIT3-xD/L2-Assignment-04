@@ -3,6 +3,8 @@ import { loginUserQuery, myProfileQuery, regUserQuery, tokenGenerateQuery, updat
 import { catchAsync } from "../../utils/catchAsync";
 import { AppError } from "../../utils/AppError";
 import { uploadToCloudinary } from './../../utils/uploadToCloudinary';
+import jwt from 'jsonwebtoken';
+import config from "../../config";
 
 export const regUser = catchAsync(async (req: Request, res: Response) => {
     let profilePicture: string | undefined
@@ -107,4 +109,34 @@ export const updateProfile = catchAsync(async (req: Request, res: Response) => {
         message: "Profile updated successfully.",
         data: result
     })
+})
+
+export const googleAuthCallback = catchAsync(async (req: Request, res: Response) => {
+    const user = req.user as any
+
+    const jwtPayload = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+    }
+
+    const accessToken = jwt.sign(jwtPayload, config.JWT_ACCESS, { expiresIn: '1d' })
+    const refreshToken = jwt.sign(jwtPayload, config.JWT_REFRESH, { expiresIn: '7d' })
+
+    res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'lax',
+        maxAge: 1000 * 60 * 60 * 24
+    })
+
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'lax',
+        maxAge: 1000 * 60 * 60 * 24 * 7
+    })
+
+    res.redirect(`${config.APP_URL}`)
 })

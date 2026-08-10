@@ -13,6 +13,7 @@ import reviewsRouter from './modules/reviews/reviews.router';
 import usersRouter from './modules/user/user.router';
 import { stripeWebhookHandler } from './modules/payment/payment.controller';
 import dashboardRouter from './modules/dashboard/dashboard.route';
+import passport from './lib/passport';
 const app: Application = express()
 
 app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), stripeWebhookHandler)
@@ -23,6 +24,7 @@ app.use(cors({
     origin: config.APP_URL,
     credentials: true
 }))
+app.use(passport.initialize())
 
 app.get('/', (req: Request, res: Response) => {
     res.send('Server is running....')
