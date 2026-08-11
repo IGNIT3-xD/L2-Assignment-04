@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { loginUserQuery, myProfileQuery, regUserQuery, tokenGenerateQuery, updateProfileQuery } from "./auth.service";
+import { googleLoginQuery, loginUserQuery, myProfileQuery, regUserQuery, tokenGenerateQuery, updateProfileQuery } from "./auth.service";
 import { catchAsync } from "../../utils/catchAsync";
 import { AppError } from "../../utils/AppError";
 import { uploadToCloudinary } from './../../utils/uploadToCloudinary';
@@ -124,20 +124,53 @@ export const googleAuthCallback = catchAsync(async (req: Request, res: Response)
     const accessToken = jwt.sign(jwtPayload, config.JWT_ACCESS, { expiresIn: '1d' })
     const refreshToken = jwt.sign(jwtPayload, config.JWT_REFRESH, { expiresIn: '7d' })
 
+    // res.cookie("accessToken", accessToken, {
+    //     httpOnly: true,
+    //     secure: true,
+    //     sameSite: true,
+    //     maxAge: 1000 * 60 * 60 * 24
+    // })
+
+    // res.cookie('refreshToken', refreshToken, {
+    //     httpOnly: true,
+    //     secure: true,
+    //     sameSite: true,
+    //     maxAge: 1000 * 60 * 60 * 24 * 7
+    // })
+
+    const redirectUrl = new URL('/auth/google/callback', config.APP_URL || 'https://fix-it-now-live.vercel.app')
+    redirectUrl.searchParams.set("accessToken", accessToken)
+    redirectUrl.searchParams.set("refreshToken", refreshToken)
+
+    res.redirect(redirectUrl.toString())
+})
+
+export const googleLogin = catchAsync(async (req: Request, res: Response) => {
+    const { idToken } = req.body
+    const result = await googleLoginQuery(idToken)
+
+    const { accessToken, refreshToken } = result
+
     res.cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: true,
+        secure: false,
+        sameSite: 'none',
         maxAge: 1000 * 60 * 60 * 24
     })
 
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: true,
+        secure: false,
+        sameSite: "none",
         maxAge: 1000 * 60 * 60 * 24 * 7
     })
-    const redirectUrl = config.APP_URL || 'https://fix-it-now-live.vercel.app'
 
-    res.redirect(redirectUrl)
+    res.status(201).json({
+        success: true,
+        message: "User login with google successfully.",
+        data: {
+            accessToken,
+            refreshToken
+        }
+    })
 })

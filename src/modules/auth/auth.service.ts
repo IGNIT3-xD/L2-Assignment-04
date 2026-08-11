@@ -1,10 +1,11 @@
 import { User } from "../../../generated/prisma/client";
-import { Role } from "../../../generated/prisma/enums";
+import { Role, UserStatus } from "../../../generated/prisma/enums";
 import config from "../../config";
 import { prisma } from "../../lib/prisma";
 import bcrypt from 'bcrypt'
 import jwt, { type JwtPayload } from 'jsonwebtoken'
 import { AppError } from "../../utils/AppError";
+import { googleClient } from "../../lib/googleAuth";
 
 export const regUserQuery = async (payload: Pick<User, 'name' | 'email' | 'password' | 'role'> & { profilePicture?: string }) => {
     const { name, email, password, role, profilePicture } = payload
@@ -177,4 +178,88 @@ export const updateProfileQuery = async (user_id: string, payload: {
     })
 
     return updateUser
+}
+
+export const googleLoginQuery = async (idToken: string) => {
+    let googleIdTokenPayload = null
+
+    try {
+        const ticket = await googleClient.verifyIdToken({
+            idToken: idToken,
+            audience: config.GOOGLE_CLIENT_ID
+        })
+
+        googleIdTokenPayload = ticket.getPayload()
+
+    } catch (error) {
+        throw new AppError(500, 'Invalid or Expired ID Token')
+    }
+
+    if (!googleIdTokenPayload) {
+        throw new AppError(500, 'Invalid or Expired ID Token')
+    }
+
+    if (!googleIdTokenPayload.email || !googleIdTokenPayload.name) {
+        throw new AppError(500, 'Gmail or User not found.')
+    }
+
+    const userWithGoogle = await prisma.user.findUnique({
+        where: {
+            email: googleIdTokenPayload.email,
+            role: Role.CUSTOMER
+        }
+    })
+
+    let user = userWithGoogle
+
+    if (!user) {
+        const isExistWithCredentials = await prisma.user.findUnique({
+            where: {
+                email: googleIdTokenPayload.email,
+                role: Role.CUSTOMER
+            }
+        })
+
+        if (isExistWithCredentials) {
+            if (isExistWithCredentials.status === UserStatus.BLOCKED) {
+                throw new AppError(403, 'User has been blcoked')
+            }
+
+            user = await prisma.user.update({
+                where: {
+                    id: isExistWithCredentials.id,
+                },
+                data: {
+                    googleId: googleIdTokenPayload.sub
+                }
+            })
+        } else {
+            user = await prisma.user.create({
+                data: {
+                    name: googleIdTokenPayload.name,
+                    email: googleIdTokenPayload.email,
+                    googleId: googleIdTokenPayload.sub
+                }
+            })
+        }
+    }
+
+    if (user.status === UserStatus.BLOCKED) {
+        throw new AppError(403, 'User has been blcoked')
+    }
+
+    const jwtPaylaod = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+    }
+
+    const accessToken = jwt.sign(jwtPaylaod, config.JWT_ACCESS, { expiresIn: '1d' })
+    const refreshToken = jwt.sign(jwtPaylaod, config.JWT_REFRESH, { expiresIn: '7d' })
+
+    return {
+        accessToken,
+        refreshToken
+    }
 }

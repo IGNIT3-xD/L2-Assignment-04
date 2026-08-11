@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { generateToken, googleAuthCallback, loginUser, myProfile, regUser, updateProfile } from "./auth.controller";
+import { generateToken, googleAuthCallback, googleLogin, loginUser, myProfile, regUser, updateProfile } from "./auth.controller";
 import { auth } from "../../middlewares/auth";
 import { Role } from "../../../generated/prisma/enums";
 import { upload } from './../../lib/multer';
@@ -24,5 +24,7 @@ authRouter.get(
     passport.authenticate('google', { session: false, failureRedirect: `${config.APP_URL}/auth/login` }),
     googleAuthCallback
 )
+
+authRouter.post("/google", googleLogin)
 
 export default authRouter
