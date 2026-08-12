@@ -51,6 +51,7 @@ This README describes the API surface and examples. Adjust base URL and auth det
 - JWT-based authentication
 - Public service and technician discovery endpoints
 - Booking workflow with technician acceptance and payment integration (Stripe)
+- Google Auth and Image upload with cloudinary and multer
 - Technician availability and booking management
 - Reviews and moderation by admins
 - Pagination, filtering, and standardized error responses
